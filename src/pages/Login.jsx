@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Bot, Eye, EyeOff } from 'lucide-react';
+import TypewriterEffect from '../components/ui/TypewriterEffect';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -11,6 +12,14 @@ export default function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  // Single phrase "Welcome Back" - no looping, no pause
+  const words = [
+    {
+      text: "Welcome Back",
+      className: "text-gray-900",
+    },
+  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +33,6 @@ export default function Login() {
     }
 
     try {
-      // Use the new login function that validates credentials
       await login(email, password);
       navigate('/dashboard');
     } catch (error) {
@@ -41,7 +49,12 @@ export default function Login() {
           <div className="h-16 w-16 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center shadow-lg mb-2">
             <Bot className="h-8 w-8 text-white" />
           </div>
-          <h2 className="mt-2 text-3xl font-extrabold text-gray-900 tracking-tight">Welcome back</h2>
+          {/* Welcome Back with typewriter effect - types once and stays */}
+          <TypewriterEffect
+            words={words}
+            className="mt-2 text-3xl font-extrabold tracking-tight"
+            loop={false}
+          />
           <p className="mt-1 text-sm text-gray-500">Sign in to your Career AI account</p>
         </div>
 
@@ -120,4 +133,4 @@ export default function Login() {
       </div>
     </div>
   );
-} 
+}
