@@ -1,0 +1,6 @@
+langchain-core>=0.1.0
+langchain-google-genai>=0.0.5
+langgraph>=0.0.20
+pypdf>=3.17.0
+ipython>=8.0.0
+google-generativeai>=0.3.0 
