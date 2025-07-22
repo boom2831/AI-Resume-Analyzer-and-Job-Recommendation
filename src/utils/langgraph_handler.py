@@ -9,8 +9,10 @@ from pypdf import PdfReader
 import io
 from IPython.display import Markdown, display
 import re
+from dotenv import load_dotenv
 
-GOOGLE_API_KEY = "AIzaSyB3NWzlhPMVJV9Wy4fzO0tXLIWT80USSQU"
+load_dotenv()
+API_KEY = os.getenv("GOOGLE_API_KEY")
 
 class AgentState(TypedDict):
     resume_text: str
@@ -22,7 +24,7 @@ class AgentState(TypedDict):
     classification: str
     agent_response: str
 
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", google_api_key=GOOGLE_API_KEY)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", google_api_key=API_KEY)
 
 def extract_resume_info(state: AgentState) -> AgentState:
     print("---NODE: EXTRACT RESUME INFO---")
