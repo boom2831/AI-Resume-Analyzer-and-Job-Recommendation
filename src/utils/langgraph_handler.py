@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 API_KEY = os.getenv("GOOGLE_API_KEY")
+print(f"DEBUG: Loaded Key starts with: {API_KEY[:10]}...")
 
 class AgentState(TypedDict):
     resume_text: str

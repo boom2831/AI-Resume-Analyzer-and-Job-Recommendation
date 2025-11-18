@@ -92,6 +92,7 @@ export default function Chatbot() {
     try {
         const resumeBase64 = await fileToBase64(file);
         
+        //const response = await fetch('https://jew3xuj4jmbnp6ykb2jxmzxr540mcrgv.lambda-url.eu-north-1.on.aws/', {
         const response = await fetch('http://localhost:8000/chat', {
           method: 'POST',
           headers: {
