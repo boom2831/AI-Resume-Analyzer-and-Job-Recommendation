@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Bot, Eye, EyeOff, User, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
+import { useRive, Layout, Fit, Alignment } from '@rive-app/react-canvas';
+
+import logoImg from '../assets/logo.png';
+import riveFile from '../assets/8682-16614-hand-from-screen-of-mobile-phone-giving-coin-to-piggy-bank.riv';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -11,18 +15,22 @@ export default function Register() {
     confirmPassword: ''
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
   const navigate = useNavigate();
   const { register } = useAuth();
 
+  const { RiveComponent } = useRive({
+    src: riveFile,
+    stateMachines: "State Machine 1",
+    layout: new Layout({ fit: Fit.Cover, alignment: Alignment.Center }),
+    autoplay: true,
+  });
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -30,175 +38,157 @@ export default function Register() {
     setIsLoading(true);
     setError('');
 
-    // Validation
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.name || !formData.email || !formData.password) {
       setError('Please fill in all fields');
       setIsLoading(false);
       return;
     }
-
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setIsLoading(false);
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      // Use the new register function
       await register(formData);
       navigate('/dashboard');
-    } catch (error) {
-      setError(error.message);
+    } catch (err) {
+      setError(err.message || 'Registration failed');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-100 via-indigo-100 to-pink-100">
-      <div className="w-full max-w-md p-8 bg-white rounded-3xl shadow-2xl border border-blue-100 flex flex-col items-center animate-fade-in">
-        <div className="flex flex-col items-center mb-6">
-          <div className="h-16 w-16 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center shadow-lg mb-2">
-            <Bot className="h-8 w-8 text-white" />
-          </div>
-          <h2 className="mt-2 text-3xl font-extrabold text-gray-900 tracking-tight">Create Account</h2>
-          <p className="mt-1 text-sm text-gray-500">Join Career AI to advance your career</p>
-        </div>
+    <div className="fixed inset-0 z-50 w-full h-full bg-gradient-to-br from-blue-50 via-purple-50 to-white overflow-y-auto">
+      
+      {/* Container to center content. min-h-full ensures vertical centering on large screens */}
+      <div className="w-full min-h-full flex items-center justify-center p-4 sm:p-8">
+        
+        {/* Decorative background glows */}
+        <div className="fixed top-[-10%] left-[-10%] w-96 h-96 bg-blue-200/30 rounded-full blur-3xl pointer-events-none" />
+        <div className="fixed bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-200/30 rounded-full blur-3xl pointer-events-none" />
 
-        <form className="w-full space-y-5" onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm text-center">
-              {error}
-            </div>
-          )}
+        {/* CARD CONTAINER 
+           - Changed h-[80vh] to min-h-[650px]: Lets the card grow with content (prevents inner scrollbar).
+           - flex-col lg:flex-row: Stacks on mobile, side-by-side on desktop.
+        */}
+        <div className="relative w-full max-w-6xl min-h-[650px] bg-white rounded-[40px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.1)] flex flex-col lg:flex-row overflow-hidden">
+          
+          {/* LEFT: Form Column */}
+          {/* Removed overflow-y-auto here to prevent double scrollbars */}
+          <div className="w-full lg:w-1/2 p-10 lg:p-16 flex flex-col justify-center z-10">
+            <div className="max-w-md mx-auto w-full">
+              <div className="flex items-center gap-3 mb-4">
+                <img src={logoImg} alt="Logo" className="h-8 w-8 object-contain" />
+                <span className="text-lg font-bold text-gray-800 tracking-tight">Resume Orbit</span>
+              </div>
 
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              <User className="h-4 w-4 inline mr-2" />
-              Full Name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              required
-              value={formData.name}
-              onChange={handleInputChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
-              placeholder="Enter your full name"
-            />
-          </div>
+              <h1 className="font-serif text-3xl lg:text-4xl text-gray-900 leading-tight mb-2">
+                Join the future <br /> of creativity.
+              </h1>
+              <p className="text-gray-500 text-sm lg:text-base mb-8 font-medium">Create an account to start.</p>
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              <Mail className="h-4 w-4 inline mr-2" />
-              Email address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={formData.email}
-              onChange={handleInputChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
-              placeholder="Enter your email"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              <Lock className="h-4 w-4 inline mr-2" />
-              Password
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                autoComplete="new-password"
-                required
-                value={formData.password}
-                onChange={handleInputChange}
-                className="block w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 pr-10 transition"
-                placeholder="Create a password"
-              />
-              <button
-                type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5 text-gray-400" />
-                ) : (
-                  <Eye className="h-5 w-5 text-gray-400" />
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <div className="bg-red-50 border border-red-100 text-red-600 text-sm font-medium text-center p-2 rounded-lg">
+                    {error}
+                  </div>
                 )}
-              </button>
+
+                <div className="bg-gray-50 rounded-xl border-2 border-transparent focus-within:border-blue-100 transition-all">
+                  <label className="block text-[11px] font-bold text-gray-500 uppercase px-4 pt-3 text-left">Full Name</label>
+                  <input
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="John Doe"
+                    className="w-full px-4 pb-3 pt-1 bg-transparent outline-none border-none text-gray-800 font-semibold placeholder-gray-300"
+                  />
+                </div>
+
+                <div className="bg-gray-50 rounded-xl border-2 border-transparent focus-within:border-blue-100 transition-all">
+                  <label className="block text-[11px] font-bold text-gray-500 uppercase px-4 pt-3 text-left">Email Address</label>
+                  <input
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="name@example.com"
+                    className="w-full px-4 pb-3 pt-1 bg-transparent outline-none border-none text-gray-800 font-semibold placeholder-gray-300"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-gray-50 rounded-xl border-2 border-transparent focus-within:border-blue-100 transition-all relative">
+                    <label className="block text-[11px] font-bold text-gray-500 uppercase px-4 pt-3 text-left">Password</label>
+                    <div className="flex items-center pr-4">
+                      <input
+                        name="password"
+                        type={showPassword ? 'text' : 'password'}
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        placeholder="••••••"
+                        className="w-full px-4 pb-3 pt-1 bg-transparent outline-none border-none text-gray-800 font-semibold placeholder-gray-300"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((s) => !s)}
+                        className="ml-2 text-gray-400 hover:text-gray-600"
+                        aria-label="Toggle password visibility"
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-xl border-2 border-transparent focus-within:border-blue-100 transition-all">
+                    <label className="block text-[11px] font-bold text-gray-500 uppercase px-4 pt-3 text-left">Confirm Password</label>
+                    <input
+                      name="confirmPassword"
+                      type={showPassword ? 'text' : 'password'}
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                      placeholder="••••••"
+                      className="w-full px-4 pb-3 pt-1 bg-transparent outline-none border-none text-gray-800 font-semibold placeholder-gray-300"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="py-3.5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl shadow-md transition"
+                  >
+                    {isLoading ? '...' : 'CREATE'}
+                  </button>
+
+                  <Link
+                    to="/login"
+                    className="py-3.5 bg-white border-2 border-blue-100 text-blue-600 font-bold rounded-xl flex items-center justify-center hover:bg-blue-50 transition"
+                  >
+                    LOGIN
+                  </Link>
+                </div>
+
+                <p className="text-[11px] text-gray-400 mt-4">
+                  Protected by reCAPTCHA and subject to the Google Privacy Policy &amp; Terms of Service.
+                </p>
+              </form>
             </div>
           </div>
 
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-              <Lock className="h-4 w-4 inline mr-2" />
-              Confirm Password
-            </label>
-            <div className="relative">
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type={showConfirmPassword ? 'text' : 'password'}
-                autoComplete="new-password"
-                required
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                className="block w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 pr-10 transition"
-                placeholder="Confirm your password"
-              />
-              <button
-                type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                tabIndex={-1}
-              >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-5 w-5 text-gray-400" />
-                ) : (
-                  <Eye className="h-5 w-5 text-gray-400" />
-                )}
-              </button>
+          {/* RIGHT: Animation Column */}
+          {/* On mobile (hidden lg), this disappears. On desktop, it takes half width and stretches to match left column height */}
+          <div className="hidden lg:flex w-1/2 relative min-h-full">
+            <div className="absolute inset-0 overflow-hidden">
+              <RiveComponent style={{ width: '100%', height: '100%' }} />
             </div>
+            <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-blue-50/30 to-transparent" />
           </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full py-2 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold rounded-lg shadow-md hover:from-blue-600 hover:to-indigo-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {isLoading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
-            ) : (
-              'Create Account'
-            )}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
-              Sign in here
-            </Link>
-          </p>
         </div>
       </div>
     </div>
   );
-} 
+}

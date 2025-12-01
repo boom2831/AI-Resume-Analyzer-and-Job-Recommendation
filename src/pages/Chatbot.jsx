@@ -2,8 +2,19 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { Paperclip, Send, User, Bot, ArrowLeft, Moon, Sun } from 'lucide-react';
+import { 
+  Paperclip, 
+  Send, 
+  User, 
+  Bot, 
+  ArrowLeft, 
+  Moon, 
+  Sun,
+  Sparkles,
+  X 
+} from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import botIcon from '../assets/bot.png'; 
 
 export default function Chatbot() {
   const [messages, setMessages] = useState([]);
@@ -18,27 +29,22 @@ export default function Chatbot() {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
-  // Get the purpose from URL parameters
   const purpose = searchParams.get('purpose') || 'general';
 
   const getWelcomeMessage = (purpose) => {
     switch (purpose) {
       case 'job-recommendations':
-        return "🎯 **Job Recommendations Specialist**\n\nHello! I'm here to help you find the perfect job opportunities. Please upload your resume (PDF) and I'll analyze your skills and experience to recommend relevant positions from top companies.\n\n**What I can help with:**\n• Find jobs matching your skills\n• Suggest companies to apply to\n• Provide application tips\n• Analyze job market trends\n\nReady to discover your next career move? 📈";
-      
+        return "🎯 **Job Recommendations Specialist**\n\nHello! I'm here to help you find the perfect job opportunities. Please upload your resume (PDF) and I'll analyze your skills and experience to recommend relevant positions from top companies.";
       case 'resume-analysis':
-        return "📝 **Resume Analysis Expert**\n\nHello! I'm your personal resume optimization specialist. Please upload your resume (PDF) and I'll provide detailed feedback to make it stand out to recruiters.\n\n**What I can help with:**\n• Identify areas for improvement\n• Suggest better wording and formatting\n• Highlight missing keywords\n• Optimize for ATS systems\n• Compare against job descriptions\n\nLet's make your resume irresistible! ✨";
-      
+        return "📝 **Resume Analysis Expert**\n\nHello! I'm your personal resume optimization specialist. Please upload your resume (PDF) and I'll provide detailed feedback to make it stand out to recruiters.";
       case 'career-chat':
-        return "💼 **Career Development Coach**\n\nHello! I'm your AI career coach here to guide you through your professional journey. Whether you need advice on career transitions, skill development, or industry insights, I'm here to help.\n\n**What I can help with:**\n• Career planning and goal setting\n• Industry insights and trends\n• Skill development recommendations\n• Networking strategies\n• Interview preparation tips\n\nWhat would you like to discuss today? 🤔";
-      
+        return "💼 **Career Development Coach**\n\nHello! I'm your AI career coach. Whether you need advice on career transitions, skill development, or industry insights, I'm here to help.";
       default:
-        return "👋 **Career AI Assistant**\n\nHello! I'm your personal career assistant. Please upload your resume (PDF) and ask me anything about job recommendations, resume improvements, or career advice.\n\n**I can help with:**\n• Job recommendations\n• Resume analysis and optimization\n• Career guidance and planning\n• Industry insights\n\nLet's advance your career together! 🚀";
+        return "👋 **Career AI Assistant**\n\nHello! I'm your personal career assistant. Please upload your resume (PDF) and ask me anything about job recommendations, resume improvements, or career advice.";
     }
   };
 
   useEffect(() => {
-    // Add initial welcome message based on purpose
     setMessages([
       {
         text: getWelcomeMessage(purpose),
@@ -48,7 +54,6 @@ export default function Chatbot() {
   }, [purpose]);
 
   useEffect(() => {
-    // Scroll to the bottom of the chat on new message
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
@@ -91,9 +96,7 @@ export default function Chatbot() {
 
     try {
         const resumeBase64 = await fileToBase64(file);
-        
-        //const response = await fetch('https://jew3xuj4jmbnp6ykb2jxmzxr540mcrgv.lambda-url.eu-north-1.on.aws/', {
-        const response = await fetch('http://localhost:8000/chat', {
+        const response = await fetch('https://jew3xuj4jmbnp6ykb2jxmzxr540mcrgv.lambda-url.eu-north-1.on.aws/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -137,67 +140,95 @@ export default function Chatbot() {
 
   const getHeaderTitle = (purpose) => {
     switch (purpose) {
-      case 'job-recommendations':
-        return 'Job Recommendations';
-      case 'resume-analysis':
-        return 'Resume Analysis';
-      case 'career-chat':
-        return 'Career Chat';
-      default:
-        return 'Career AI Chat';
+      case 'job-recommendations': return 'Job Match';
+      case 'resume-analysis': return 'Resume Analysis';
+      case 'career-chat': return 'Career Coach';
+      default: return 'AI Assistant';
     }
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-      <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-md p-4 flex items-center justify-between border-b">
-        <div className="flex items-center">
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="mr-4 p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-          <Bot className="h-8 w-8 text-blue-600 dark:text-blue-300 mr-3" />
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{getHeaderTitle(purpose)}</h1>
-        </div>
-        <div className="flex items-center space-x-3">
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {theme === 'dark' ? <Sun className="h-5 w-5 text-yellow-400" /> : <Moon className="h-5 w-5 text-gray-600" />}
-          </button>
-          <img
-            className="h-8 w-8 rounded-full"
-            src={user?.avatar}
-            alt={user?.name}
-          />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{user?.name}</span>
+    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      
+      {/* --- HEADER --- */}
+      <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center">
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="mr-4 p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </button>
+              
+              <img 
+                src={botIcon} 
+                alt="AI Assistant" 
+                className="w-10 h-10 rounded-full mr-3 object-cover shadow-sm"
+              />
+              
+              <div>
+                <h1 className="text-xl font-bold font-serif text-gray-900 dark:text-white">
+                  {getHeaderTitle(purpose)}
+                </h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-1.5 animate-pulse"></span>
+                  Online
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-300"
+              >
+                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+            </div>
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4 md:p-6 dark:bg-gray-900">
-        <div className="max-w-3xl mx-auto">
+      {/* --- CHAT AREA --- */}
+      <main className="flex-1 overflow-y-auto p-4 md:p-6 scrollbar-hide">
+        <div className="max-w-3xl mx-auto space-y-6">
           {messages.map((msg, index) => (
-            <div key={index} className={`flex items-start gap-3 my-4 ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
+            <div 
+              key={index} 
+              className={`flex items-start gap-4 ${msg.isUser ? 'justify-end' : 'justify-start'}`}
+            >
+              
+              {/* Bot Avatar (Chat Bubble) */}
               {!msg.isUser && (
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white flex-shrink-0 shadow-lg">
-                  <Bot size={20} />
+                <div className="w-8 h-8 rounded-full overflow-hidden shadow-md mt-1 border border-gray-100 dark:border-gray-700">
+                  <img src={botIcon} alt="Bot" className="w-full h-full object-cover" />
                 </div>
               )}
-              <div className={`p-4 rounded-2xl max-w-lg shadow-sm ${msg.isUser ? 'bg-gradient-to-br from-blue-500 to-purple-500 text-white rounded-br-none dark:bg-gradient-to-br dark:from-blue-700 dark:to-purple-700' : 'bg-white text-gray-800 rounded-bl-none border dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700'}`}>
-                <div className="prose prose-sm max-w-none text-left dark:prose-invert">
-                  <ReactMarkdown>
-                    {msg.text}
-                  </ReactMarkdown>
+
+              {/* Message Bubble */}
+              <div 
+                className={`
+                  p-5 rounded-2xl max-w-[85%] sm:max-w-lg shadow-sm text-sm leading-relaxed
+                  ${msg.isUser 
+                    ? 'bg-blue-600 text-white rounded-br-none' 
+                    : 'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-bl-none'
+                  }
+                `}
+              >
+                <div className={`prose prose-sm max-w-none ${msg.isUser ? 'prose-invert' : 'dark:prose-invert'}`}>
+                  <ReactMarkdown>{msg.text}</ReactMarkdown>
                 </div>
               </div>
-               {msg.isUser && (
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center text-gray-600 flex-shrink-0 shadow-lg dark:from-gray-700 dark:to-gray-600 dark:text-gray-200">
-                  <User size={20} />
-                </div>
+
+              {/* User Avatar */}
+              {msg.isUser && (
+                <img
+                  className="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800 shadow-md mt-1"
+                  src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=random`}
+                  alt="User"
+                />
               )}
             </div>
           ))}
@@ -205,15 +236,27 @@ export default function Chatbot() {
         </div>
       </main>
 
-      <footer className="bg-white/80 backdrop-blur-sm border-t p-4">
+      {/* --- INPUT AREA --- */}
+      <footer className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 p-4">
         <div className="max-w-3xl mx-auto">
-           {fileName && (
-            <div className="bg-blue-50 border border-blue-300 text-blue-800 text-sm rounded-lg px-4 py-2 mb-2 flex justify-between items-center">
-              <span className="font-medium">{fileName}</span>
-              <button onClick={() => { setFile(null); setFileName(''); }} className="text-blue-600 hover:text-blue-800 font-bold text-lg">&times;</button>
+          
+          {/* File Preview Pill */}
+          {fileName && (
+            <div className="mb-3 inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-medium border border-blue-100 dark:border-blue-900/50">
+              <Paperclip size={12} />
+              <span className="truncate max-w-[200px]">{fileName}</span>
+              <button 
+                onClick={() => { setFile(null); setFileName(''); }} 
+                className="hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-full p-0.5 transition-colors"
+              >
+                <X size={12} />
+              </button>
             </div>
           )}
-          <div className="flex items-center bg-gray-100 rounded-xl p-2 shadow-sm">
+
+          {/* Input Container */}
+          <div className="relative flex items-end gap-2 bg-gray-50 dark:bg-gray-800 p-2 rounded-[24px] border border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all shadow-sm">
+            
             <input
               type="file"
               ref={fileInputRef}
@@ -221,33 +264,51 @@ export default function Chatbot() {
               className="hidden"
               accept=".pdf"
             />
+            
             <button
               onClick={() => fileInputRef.current.click()}
-              className="p-3 text-gray-600 hover:bg-gray-200 rounded-full transition-colors"
+              className="p-3 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
+              title="Upload PDF"
             >
-              <Paperclip size={22} />
+              <Paperclip size={20} />
             </button>
-            <input
-              type="text"
+
+            <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message or upload a resume..."
-              className="flex-1 bg-transparent px-4 py-2 text-gray-800 focus:outline-none"
-              disabled={isLoading}
+              onKeyPress={(e) => {
+                if(e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault(); 
+                  handleSendMessage();
+                }
+              }}
+              placeholder="Type your message..."
+              className="flex-1 max-h-32 min-h-[44px] py-3 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none text-sm resize-none scrollbar-hide"
+              rows={1}
             />
+
             <button
               onClick={handleSendMessage}
               disabled={isLoading || !file}
-              className="p-3 text-white bg-gradient-to-br from-blue-500 to-purple-500 rounded-full hover:from-blue-600 hover:to-purple-600 disabled:from-gray-300 disabled:to-gray-400 transition-all duration-200 shadow-lg"
+              className={`
+                p-3 rounded-full flex items-center justify-center transition-all duration-200 shadow-md
+                ${isLoading || !file 
+                  ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed' 
+                  : 'bg-blue-600 hover:bg-blue-700 text-white transform hover:scale-105 active:scale-95'
+                }
+              `}
             >
               {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                <Send size={22} />
+                <Send size={18} className={!file ? 'opacity-50' : 'opacity-100'} />
               )}
             </button>
           </div>
+          
+          <p className="text-center text-[10px] text-gray-400 dark:text-gray-500 mt-2">
+            AI can make mistakes. Please verify important information.
+          </p>
         </div>
       </footer>
     </div>

@@ -12,7 +12,8 @@ import re
 from dotenv import load_dotenv
 
 load_dotenv()
-API_KEY = os.getenv("GOOGLE_API_KEY")
+#API_KEY = os.getenv("GOOGLE_API_KEY")
+API_KEY = 'AIzaSyBIEXjxmBa5rZew3XcmobLqCwg37dq1BbM'
 print(f"DEBUG: Loaded Key starts with: {API_KEY[:10]}...")
 
 class AgentState(TypedDict):

@@ -9,5 +9,6 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"), // ✅ Make sure this is set
     },
   },
+  assetsInclude: ['**/*.riv'],
 })
 
